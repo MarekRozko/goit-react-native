@@ -1,8 +1,8 @@
 import React, { useState, useEffect} from "react";
-import { StyleSheet, View, ImageBackground, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, Image} from "react-native";
+import { StyleSheet, View, ImageBackground, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, Image, Dimensions} from "react-native";
 import {useFonts} from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen';
-
+import { AntDesign } from '@expo/vector-icons';
 const initialState = {
     login: "",
     email: "",
@@ -11,11 +11,24 @@ const initialState = {
   
 };
 
-export default RegistrationScreen = () => {
+export default RegistrationScreen = ({navigation}) => {
     const [isShowKeyboard, setIsShowKeyboard] = useState(false);
     const [state, setstate] = useState(initialState);
-
-      const keyboardHide = () => {
+    const [dimensions, setdimensions] = useState(
+        Dimensions.get("window").width);
+    
+    useEffect(() => {
+    const onChange = () => {
+        const width = Dimensions.get("window").width;
+      setdimensions(width);
+    };
+    const subscription = Dimensions.addEventListener(
+      'change', onChange)
+    return () => {
+      return () => subscription?.remove();
+    };
+  }, []);
+    const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     setstate(initialState);
@@ -23,8 +36,8 @@ export default RegistrationScreen = () => {
       };
     
     const [fontsLoaded] = useFonts({
-    'Roboto-Regular': require('../assets/fonts/Roboto-Regular.ttf'),
-    'Roboto-Medium': require('../assets/fonts/Roboto-Medium.ttf'),
+    'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
+    'Roboto-Medium': require('../../assets/fonts/Roboto-Medium.ttf'),
     });
     
     useEffect(() => {
@@ -39,18 +52,24 @@ if (!fontsLoaded) {
 } else {
     SplashScreen.hideAsync();
 }
+    
 
+    
+
+    
+    
     return (
-    <TouchableWithoutFeedback>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
             <View style={styles.container}>
    
-            <ImageBackground style={styles.imageLogo} source={require('../assets/images/Logo-bg.jpg')}>
-                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> 
-                        <View style={{ ...styles.form, marginBottom: isShowKeyboard ? -114 : -343, }}>
+            <ImageBackground style={styles.imageLogo} source={require('../../assets/images/Logo-bg.jpg')}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                    <View style={styles.formContainer}>
+                        <View style={{ ...styles.form, marginBottom: isShowKeyboard ? -144 : -345, width: dimensions, }}>
                         <View style={styles.avatarContainer}>
                         <Image
                     style={styles.avatar}
-                    source={require("../assets/images/avatar.jpg")}
+                    source={require("../../assets/images/avatar.jpg")}
                         ></Image>
                     </View>
                         <Text style={{...styles.formTitle, fontFamily:"Roboto-Medium", fontSize: 30}}>Registration</Text>
@@ -73,9 +92,10 @@ if (!fontsLoaded) {
                         <TouchableOpacity activeOpacity={0.8} style={styles.button} onPress={keyboardHide}>
                             <Text style={{...styles.btnTitle, fontFamily:"Roboto-Regular", fontSize: 16}}>Registration</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8}  ><Text style={{...styles.already,fontFamily:"Roboto-Regular", fontSize: 16 }}>Already have an account? Sign In</Text></TouchableOpacity>
+                            <TouchableOpacity activeOpacity={0.8}  ><Text style={{...styles.already,fontFamily:"Roboto-Regular", fontSize: 16 }}onPress={() => navigation.navigate("Login")}>Already have an account? Sign In</Text></TouchableOpacity>
                         
-                    </View>
+                            </View>
+                        </View>
                         </KeyboardAvoidingView>
                 </ImageBackground>
 
